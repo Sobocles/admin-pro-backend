@@ -1,18 +1,33 @@
 
-const Usuario = require('../models/usuario')
 const bcrypt = require('bcryptjs');
+
+const Usuario = require('../models/usuario');
+const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async(req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const desde = Number(req.query.desde) || 0;
+    console.log(desde);
+    /*
+    const usuarios = await Usuario
+                           .find({}, 'nombre email role google')
+                           .skip( desde )
+                           .limit( 5 );
+    const total = await Usuario.count(); */
+    const [ usuarios, total ] = await Promise.all([
+        Usuario
+            .find({}, 'nombre email role google img')
+            .skip( desde ) //desde es DESDE DONDE EMPIEZA A PAGINAR, SI ES 5 EMPIEZA DEL 5 SI ES 10 DEL 10
+            .limit( 5 ), //SI EMPIEZA DEL 10 MOSTRARA 5 MAS OSEA HASTA EL 15
+        Usuario.countDocuments()
+    ]);
 
     res.json({
         ok: true,
         usuarios,
+        total,
         uid: req.uid
     });
-
-
 }
 
 const crearUsuario = async(req, res  ) => {
