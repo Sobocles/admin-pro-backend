@@ -5,9 +5,9 @@ const Medico = require('../models/medico');
 const Hospital = require('../models/hospital');
 
 const borrarImagen = ( path ) => {
-    if ( fs.existsSync( path )  ) { //SI EXISTE UNA IMAGEN QUE ESTE EN EL PATHVIEJO
+    if ( fs.existsSync( path ) ) {
         // borrar la imagen anterior
-        fs.unlinkSync( path ); //SE BORRA
+        fs.unlinkSync( path );
     }
 }
 
@@ -19,16 +19,16 @@ const actualizarImagen = async(tipo, id, nombreArchivo) => {
     switch( tipo ) {
         case 'medicos':
             const medico = await Medico.findById(id);
-            if ( !medico ) { //la imagen no se pudo subr hubo un false
+            if ( !medico ) {
                 console.log('No es un médico por id');
                 return false;
             }
-            //HAY QUE EVALUAR SI ESE MEDICO, HOSPITAL O USUARIO TIENE UNA IMAGEN PREVIAMENTE ASIGNADA Y SI ES ASI HAY QUE BORRARLA
-            pathViejo = `./uploads/medicos/${ medico.img }`;
-            borrarImagen( pathViejo ); //SI EL PATH NO EXISTE, OSEA NO HAY NADA EN EL medico.img
 
-            medico.img = nombreArchivo; //SE LE ASIGNA LA IMAGEN CON EL NOMBRE DEL ARCHIVO CREADO CON EL UID QUE GENERO UN NOMBRE Y LA EXTENCION DEL ARCHIVO
-            await medico.save(); //SE GUARDA EN LA BASE DE DATOS
+            pathViejo = `./uploads/medicos/${ medico.img }`;
+            borrarImagen( pathViejo );
+
+            medico.img = nombreArchivo;
+            await medico.save();
             return true;
 
         break;

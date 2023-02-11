@@ -1,8 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-
 const MedicoSchema = Schema({
-
     nombre: {
         type: String,
         required: true
@@ -13,18 +11,19 @@ const MedicoSchema = Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        require: true
+        required: true
     },
     hospital: {
         type: Schema.Types.ObjectId,
         ref: 'Hospital',
-        require: true
-    }
-},);
+        required: true
+    },
+    
+});
 
-//CONFIGURACION GLOBAL DEL ESQUEMA TODOS LOS USUARIO INSTANCIADOS VAN A APASAR POR ESTA CONFIGURACION POR ESO ES GLOBAL
+
 MedicoSchema.method('toJSON', function() {
-    const { __v, password, ...object } = this.toObject(); //se esta extrayendo la version y el id que viene de la instancia del objeto
+    const { __v, ...object } = this.toObject();
     return object;
 })
 
