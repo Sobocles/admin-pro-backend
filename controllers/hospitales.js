@@ -40,19 +40,82 @@ const crearHospital = async(req, res = response) =>{
  
 }
 
-const actualizarHospital = (req, res = response) =>{
-    res.json({
-        ok: true,
-        msg: 'actualizarHospital '
-    })
+const actualizarHospital = async(req, res = response) =>{
+
+    const id = req.params.id; //ESTE ID DEL HOSPITAL SE ENVIA EN LA SOLICITUD HTTP
+    const uid = req.uid; //SE TIENE ACCESO AL UID DEL USUARIO PORQUE PASAMOS POR EL JSONWEBTOKEN
+
+    try{
+
+        const hospital = await Hospital.findById( id );
+
+        if( !hospital ){
+            return res.status(404).json({
+                ok: true,
+                msg: 'Hospital no encontrado por id'
+            });
+        }
+        //SI LO ENCONTRO EN LA BASE DE DATOS HAY QUE ACTUALIZARLO
+        const cambioHospital = { //SE CREA UN OBJETO QUE ES EL HOSPITAL POR EL CUAL QUIERO CAMBIAR EL QUE YA ESTA EN LA BD CON EL ID DE USUAIRO INCLUIDO
+            ...req.body,
+            usuario: uid
+        }
+
+        const hospitalActualizado = await Hospital.findByIdAndUpdate( id, cambioHospital, { new: true }); //MANDO LOS PARAMETROS PARA ACTUALIZARLO
+
+        res.json({
+            ok: true,
+            msg: 'actualizarHospital ',
+            hospital: hospitalActualizado
+        })
+
+    } catch (error) {
+
+        console.log(error)
+
+        res.status(500).json({
+            ok: true,
+            msg: 'Error al actualizar hospital '
+        })
+
+    }
+
+    
 }
 
-const borrarHospital = (req, res = response) =>{
-    res.json({
-        ok: true,
-        msg: 'borrarHospital '
-    })
+const borrarHospital = async( req, res ) => {
+
+    const id = req.params.id;
+
+    try {
+
+        const hospitalDB = await Hospital.findById( id );  
+       
+        if ( !hospitalDB ) {                             
+            return res.status(404).json({                
+            ok: false,
+            msg: 'No existe un hospital por ese id'
+            });
+        }  
+        
+        await Hospital.findByIdAndDelete( id );
+        
+        res.json({
+            ok: true,
+            mgs: 'Hospital eliminado'
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado'
+        })
+    }
+
 }
+
 
 
 module.exports = {
